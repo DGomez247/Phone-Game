@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class Cannon_Crontroller : MonoBehaviour {
 
     [Range(0.001f, 10f)]
-    public float speed;
+    public float speed =1.0f;
     public GameObject CannonBallPrefab;
     public Transform CannonBallSpawnPoint;
     private float _angle;
@@ -15,6 +15,13 @@ public class Cannon_Crontroller : MonoBehaviour {
     public float cannon_Power;
     public float MaxPower = 100f;
     public float MinPower = 1f;
+    float dirY;
+    Rigidbody2D rb;
+    float rotateSpeed = 10f;
+    GameObject obj;
+
+    private Quaternion localRotation; // 
+    
 
     [SerializeField]
     Text _powerText;
@@ -33,6 +40,8 @@ public class Cannon_Crontroller : MonoBehaviour {
         if (_angle > 90f) return;
         _angle += AngleIncrement;
         transform.rotation = Quaternion.Euler(0, 0, _angle);
+        
+
     }
 
     public void angle_Down()
@@ -64,11 +73,15 @@ public class Cannon_Crontroller : MonoBehaviour {
     void Start () {
         Debug.Log("Inside Start");
         _powerText.text = "Power " + MinPower.ToString();
+        localRotation = transform.rotation;
+        
+
+        obj = GameObject.Find("look");
 
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update () {
         //Debug.Log("Inside Update");
         if (Input.GetKey(KeyCode.RightArrow))
         {
@@ -78,12 +91,28 @@ public class Cannon_Crontroller : MonoBehaviour {
         {
             transform.root.position += Vector3.left * speed;
         }
+
+        //dirY = Input.acceleration.y * rotateSpeed;
+        //transform.position = new Vector2(Mathf.Clamp(transform.position.y, -7.5f, 7.5f), transform.position.x);
+        /*
+                float curSpeed = Time.deltaTime * speed;
+                // first update the current rotation angles with input from acceleration axis
+                localRotation.y += Input.acceleration.x * curSpeed;
+                localRotation.x += Input.acceleration.y * curSpeed;
+
+                 then rotate this object accordingly to the new angle
+                transform.rotation = localRotation;
+                */
+
+        Vector2 targetPos = new Vector2(obj.transform.position.x, obj.transform.position.y);
+        transform.LookAt(targetPos);
     }
 
     private void FixedUpdate()
     {
 
         //Debug.Log("Inside FixedUpdate");
+        //rb.velocity = new Vector2(dirY, 0f);
     }
 
     private void LateUpdate()
